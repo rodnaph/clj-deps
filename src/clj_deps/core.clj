@@ -21,7 +21,8 @@
           (:name project)
           (get project :branch "master")))
 
-(defn fetch-project
+(defn project->edn
+  "Fetch a project.clj and parse it to EDN."
   [project]
   (edn/read
    (PushbackReader.
@@ -31,12 +32,18 @@
 ;; Version Fetching
 ;; ----------------
 
-(defn project-map [project]
+(defn project-map
+  "Turns a project spec into its project definition fetched
+  from source control."
+  [project]
   (apply
     hash-map
-    (drop 3 (fetch-project project))))
+    (drop 3 (project->edn project))))
 
-(defn with-latest-version [dependency]
+(defn with-latest-version
+  "Adds the latest version to the dependency vector.
+   [foo '1.2.3'] => [foo '1.2.3' '1.2.4']"
+  [dependency]
   (conj dependency (dep->latest dependency)))
 
 (defn out-of-date?
@@ -46,7 +53,9 @@
     later-version?
     (drop 1 dependency)))
 
-(defn check-dependencies [project]
+(defn out-of-date-deps
+  "Return a projects out-dated dependencies"
+  [project]
   (->> project
        (project-map)
        :dependencies
