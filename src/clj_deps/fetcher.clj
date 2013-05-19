@@ -1,6 +1,7 @@
 
 (ns clj-deps.fetcher
-  (:require [net.cgrand.enlive-html :refer :all]))
+  (:require [net.cgrand.enlive-html :refer :all]
+            [clojure.string :as s]))
 
 (def ^{:private true}
   repositories
@@ -23,7 +24,7 @@
   (let [[dep-org dep-artifact] (dependency-parts dependency)]
     (format "%s/%s/%s/maven-metadata.xml"
             (:url repository)
-            dep-org
+            (s/replace dep-org "." "/")
             dep-artifact)))
 
 (defn- metadata-resource
@@ -33,7 +34,7 @@
     (-> (metadata-url repository dependency)
       (java.net.URL.)
       (html-resource))
-    (catch Exception e {})))
+    (catch Exception e e)))
 
 (def ^{:private true}
   content-for-node

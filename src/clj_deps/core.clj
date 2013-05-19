@@ -1,17 +1,11 @@
 
 (ns clj-deps.core
-  (:require [clojure.java.io :as io]
+  (:require [clj-deps.fetcher :refer [dep->latest]]
+            [clojure.java.io :as io]
             [clojure.edn :as edn]
             [clojure.xml :as xml]
-            [net.cgrand.enlive-html :refer :all])
+            [boxuk.versions :refer [later-version?]])
   (:import (java.io PushbackReader)))
-
-(def repositories
-  "Standard repositories to check.  Extra repos per-project can be added."
-  [{:name "Clojars"
-    :url "http://clojars.org/repo"}
-   {:name "Maven Central"
-    :url "http://repo2.maven.org/maven2"}])
 
 (defmulti fetch-project :source)
 
@@ -22,8 +16,9 @@
 
 (defmethod project-url :github
   [project]
-  (format "https://raw.github.com/%s/master/project.clj"
-          (:name project)))
+  (format "https://raw.github.com/%s/%s/project.clj"
+          (:name project)
+          (get project :branch "master")))
 
 (defmethod fetch-project :github
   [project]
@@ -32,34 +27,28 @@
      (io/reader
        (project-url project)))))
 
-;; Projects
-;; --------
+;; Version Fetching
+;; ----------------
 
 (defn project-map [project]
   (apply
     hash-map
     (drop 3 (fetch-project project))))
 
-(defn latest-version [repository [dep-name _]]
-  (-> (format "%s/%s/%s/maven-metadata.xml"
-              (:url repository)
-              dep-name
-              dep-name)
-      (java.net.URL.)
-      (html-resource)
-      (select [:release])
-      (first)
-      :content
-      (first)))
+(defn with-latest-version [dependency]
+  (conj dependency (dep->latest dependency)))
 
-(defn dep->latest [dependency]
-  (reduce
-    (fn [return repository]
-      (if (nil? return)
-        (latest-version
-          repository
-          dependency)
-        return))
-    nil
-    repositories))
+(defn out-of-date?
+  "Indicates if the dependency is out of date (eg. [foo '1.2' '1.3'])"
+  [dependency]
+  (apply
+    later-version?
+    (drop 1 dependency)))
+
+(defn check-dependencies [project]
+  (->> project
+       (project-map)
+       :dependencies
+       (map with-latest-version)
+       (filter out-of-date?)))
 
