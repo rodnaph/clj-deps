@@ -7,12 +7,7 @@
             [boxuk.versions :refer [later-version?]])
   (:import (java.io PushbackReader)))
 
-(defmulti fetch-project :source)
-
 (defmulti project-url :source)
-
-;; Github
-;; ------
 
 (defmethod project-url :github
   [project]
@@ -20,7 +15,13 @@
           (:name project)
           (get project :branch "master")))
 
-(defmethod fetch-project :github
+(defmethod project-url :bitbucket
+  [project]
+  (format "https://bitbucket.org/%s/raw/%s/project.clj"
+          (:name project)
+          (get project :branch "master")))
+
+(defn fetch-project
   [project]
   (edn/read
    (PushbackReader.
