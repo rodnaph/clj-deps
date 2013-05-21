@@ -1,5 +1,5 @@
 
-(ns clj-deps.fetcher
+(ns clj-deps.maven
   (:require [net.cgrand.enlive-html :refer :all]
             [clojure.string :as s]))
 
@@ -11,7 +11,7 @@
    {:name "Clojars"
     :url "http://clojars.org/repo"}])
 
-(defn dependency-parts
+(defn- dependency-parts
   "Split a dependency name into its org/artifact parts"
   [[artifact]]
   (if-let [parts (re-matches #"(.+?)\/(.*)" (str artifact))]
@@ -37,15 +37,14 @@
     (catch Exception e {})))
 
 (defn- versions-for
+  "Returns the versions for a dependency in a repository."
   [repository dependency]
   (let [metadata (metadata-resource repository dependency)]
     (->> (select metadata [:version])
          (map (comp first :content)))))
 
-;; Public
-;; ------
-
-(defn dep->versions
+(defn- dep->versions
+  "Resolve a dependencies available versions."
   ([dependency] (dep->versions [] dependency))
   ([extra-repositories dependency]
     (reduce
@@ -55,4 +54,14 @@
       (concat
         repositories
         extra-repositories))))
+
+;; Public
+;; ------
+
+(defn- with-versions
+  "Adds the latest version to the dependency vector.
+  [foo '1.2.3'] => [foo '1.2.3' ['1.2.4' '1.2.3' '1.2.2']]"
+  [dependency]
+  (conj dependency
+        (dep->versions dependency)))
 
