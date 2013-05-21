@@ -1,10 +1,10 @@
 
 (ns clj-deps.core
-  (:require [clj-deps.fetcher :refer [dep->latest]]
+  (:require [clj-deps.fetcher :refer [dep->versions]]
             [clojure.java.io :as io]
             [clojure.edn :as edn]
             [clojure.xml :as xml]
-            [boxuk.versions :refer [later-version?]])
+            [boxuk.versions :refer [stable? latest-version]])
   (:import (java.io PushbackReader)))
 
 (defmulti project-url :source)
@@ -25,9 +25,9 @@
   "Fetch a project.clj and parse it to EDN."
   [project]
   (edn/read
-   (PushbackReader.
-     (io/reader
-       (project-url project)))))
+    (PushbackReader.
+      (io/reader
+        (project-url project)))))
 
 ;; Version Fetching
 ;; ----------------
@@ -40,25 +40,33 @@
     hash-map
     (drop 3 (project->edn project))))
 
-(defn with-latest-version
+(defn with-versions
   "Adds the latest version to the dependency vector.
-   [foo '1.2.3'] => [foo '1.2.3' '1.2.4']"
+  [foo '1.2.3'] => [foo '1.2.3' ['1.2.4' '1.2.3' '1.2.2']]"
   [dependency]
-  (conj dependency (dep->latest dependency)))
+  (conj dependency
+        (dep->versions dependency)))
 
-(defn out-of-date?
-  "Indicates if the dependency is out of date (eg. [foo '1.2' '1.3'])"
-  [dependency]
-  (apply
-    later-version?
-    (drop 1 dependency)))
+(defn- filter-versions
+  ([filterer [dep-name current versions]]
+   [dep-name
+    current
+    (filter filterer versions)]))
 
 (defn out-of-date-deps
   "Return a projects out-dated dependencies"
   [project]
-  (->> project
-       (project-map)
-       :dependencies
-       (map with-latest-version)
-       (filter out-of-date?)))
+  (let [deps (->> project
+                  (project-map)
+                  :dependencies
+                  (map with-versions))]
+    {:stable (map (partial filter-versions stable?) deps)
+     :unstable (map (partial filter-versions identity) deps)}))
+
+(def project
+  {:source :github
+   :name "rodnaph/diallo"
+   :branch "master"})
+
+(out-of-date-deps project)
 

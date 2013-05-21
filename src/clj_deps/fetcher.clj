@@ -6,10 +6,10 @@
 (def ^{:private true}
   repositories
   "Standard repositories to check.  Extra repos per-project can be added."
-  [{:name "Clojars"
-    :url "http://clojars.org/repo"}
-   {:name "Maven Central"
-    :url "http://repo2.maven.org/maven2"}])
+  [{:name "Maven Central"
+    :url "http://repo2.maven.org/maven2"}
+   {:name "Clojars"
+    :url "http://clojars.org/repo"}])
 
 (defn dependency-parts
   "Split a dependency name into its org/artifact parts"
@@ -34,44 +34,24 @@
     (-> (metadata-url repository dependency)
       (java.net.URL.)
       (html-resource))
-    (catch Exception e e)))
+    (catch Exception e {})))
 
-(def ^{:private true}
-  content-for-node
-  "Given a node with a list of content, get the first item in it."
-  (comp first :content first))
-
-(defn- version-node
-  "Select the latest version from the Maven metadata"
-  [metadata]
-  (let [release (select metadata [:release])]
-    (if (empty? release)
-      (select metadata [:version])
-      release)))
-
-(defn- latest-version
-  "Fetch the latest version of a library from a repository, or return nil
-  if it's not found in that repository."
+(defn- versions-for
   [repository dependency]
-  (-> (metadata-resource repository dependency)
-      (version-node)
-      (content-for-node)))
+  (let [metadata (metadata-resource repository dependency)]
+    (->> (select metadata [:version])
+         (map (comp first :content)))))
 
 ;; Public
 ;; ------
 
-(defn dep->latest
-  "Resolve a dependency (eg. [foo '1.2.3']) to its latest version."
-  ([dependency] (dep->latest [] dependency))
+(defn dep->versions
+  ([dependency] (dep->versions [] dependency))
   ([extra-repositories dependency]
     (reduce
-      (fn [return repository]
-        (if (nil? return)
-          (latest-version
-            repository
-            dependency)
-          return))
-      nil
+      (fn [_ repository]
+        (if-let [versions (versions-for repository dependency)]
+          (reduced versions)))
       (concat
         repositories
         extra-repositories))))
