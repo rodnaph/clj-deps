@@ -7,5 +7,6 @@
                  [ring/ring-jetty-adapter "1.1.8"]
                  [ring/ring-devel "1.1.8"]
                  [enlive "1.1.1"]]
-  :source-paths ["dev" "src/clojure" "src/html"])
+  :source-paths ["dev" "src/clojure" "src/html"]
+  :main clj-deps.core)
 
