@@ -2,12 +2,6 @@
 (ns clj-deps.checker
   (:require [boxuk.versions :refer [later-version? latest-version latest-stable]]))
 
-(defn- filter-versions
-  ([filterer [dep-name current versions]]
-   [dep-name
-    current
-    (filter filterer versions)]))
-
 (defn- map-versions [f col]
   (map (fn [[x y z]]
          [x y (f z)]) col))
