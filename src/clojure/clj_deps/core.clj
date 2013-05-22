@@ -1,7 +1,8 @@
 
 (ns clj-deps.core
   (:require [clj-deps.web :as web]
-            [ring.adapter.jetty :refer [run-jetty]]))
+            [ring.adapter.jetty :refer [run-jetty]])
+  (:gen-class))
 
 (defn start-web
   ([] (start-web {}))
