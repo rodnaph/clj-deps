@@ -23,7 +23,7 @@
 ;; Public
 ;; ------
 
-(defn check-dependencies
+(defn project->status
   "Return a projects out-dated dependencies"
   [project]
   (let [dependencies (:dependencies project)]

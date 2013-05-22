@@ -18,7 +18,7 @@
           (:name project)
           (get project :branch "master")))
 
-(defn project->edn
+(defn- project->edn
   "Fetch a project.clj and parse it to EDN."
   [project]
   (edn/read
@@ -29,7 +29,7 @@
 ;; Public
 ;; ------
 
-(defn project->map
+(defn description->project
   "Turns a project spec into its project definition fetched from source control."
   [project]
   (apply

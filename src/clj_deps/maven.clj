@@ -58,10 +58,13 @@
 ;; Public
 ;; ------
 
-(defn- with-versions
+(defn project->versions
   "Adds the latest version to the dependency vector.
   [foo '1.2.3'] => [foo '1.2.3' ['1.2.4' '1.2.3' '1.2.2']]"
-  [dependency]
-  (conj dependency
-        (dep->versions dependency)))
+  [project]
+  (assoc
+    project
+    :dependencies
+    (map #(conj % (dep->versions %))
+         (:dependencies project))))
 
