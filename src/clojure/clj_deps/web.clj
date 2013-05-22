@@ -17,15 +17,15 @@
                  (:user params))})
 
 (defn png-for [stability req]
-  (let [status (-> (req->description req)
+  (let [result (-> (req->description req)
                    (description->project)
                    (project->versions)
-                   (project->status))
-        result (if (empty? (stability status))
-                 "uptodate"
-                 "outdated")]
+                   (project->status)
+                   (stability)
+                   (empty?))]
     (file-response
-      (format "resources/images/%s.png" result))))
+      (format "resources/images/%s.png"
+              (if result "uptodate" "outdated")))))
 
 (deftemplate www-index "index.html"
   [req])

@@ -2,7 +2,7 @@
 (defproject clj-deps "0.1.0-SNAPSHOT"
   :description "Clojure dependency checker"
   :dependencies [[org.clojure/clojure "1.5.1"]
-                 [boxuk/versions "0.6.0"]
+                 [boxuk/versions "0.6.1"]
                  [compojure "1.1.5"]
                  [ring/ring-jetty-adapter "1.1.8"]
                  [ring/ring-devel "1.1.8"]
