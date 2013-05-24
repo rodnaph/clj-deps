@@ -60,6 +60,11 @@
         repositories
         extra-repositories))))
 
+(defn- name-and-current
+  "Extract just name and current version for dependency"
+  [[dep-name current]]
+  [dep-name current])
+
 ;; Public
 ;; ------
 
@@ -70,6 +75,6 @@
   (assoc
     project
     :dependencies
-    (map #(conj % (dep->versions %))
+    (map #(conj (name-and-current %) (dep->versions %))
          (:dependencies project))))
 

@@ -21,6 +21,7 @@
   "Return a projects out-dated dependencies"
   [project]
   (let [dependencies (:dependencies project)]
-    {:stable (out-dated dependencies latest-stable)
-     :unstable (out-dated dependencies latest-version) }))
+    (merge project
+      {:stable (out-dated dependencies latest-stable)
+       :unstable (out-dated dependencies latest-version) })))
 

@@ -3,6 +3,7 @@
   (:require [clj-deps.project :refer [description->project]]
             [clj-deps.maven :refer [project->versions]]
             [clj-deps.checker :refer [project->status]]
+            [clj-deps.html :as html]
             [net.cgrand.enlive-html :refer :all]
             [compojure.core :refer :all]
             [compojure.handler :as handler]
@@ -16,11 +17,14 @@
                  (:repo params)
                  (:user params))})
 
+(defn req->status [req]
+  (-> (req->description req)
+      (description->project)
+      (project->versions)
+      (project->status)))
+
 (defn png-for [stability req]
-  (let [result (-> (req->description req)
-                   (description->project)
-                   (project->versions)
-                   (project->status)
+  (let [result (-> (req->status req)
                    (stability)
                    (empty?))]
     (file-response
@@ -30,8 +34,13 @@
 (deftemplate www-index "index.html"
   [req])
 
+(defn www-project [req]
+  (html/project-show
+    (req->status req)))
+
 (defroutes all-routes
   (GET "/" [] www-index)
+  (GET "/:repo/:user" [] www-project)
   (GET "/:repo/:user/stable.png" [] (partial png-for :stable))
   (GET "/:repo/:user/unstable.png" [] (partial png-for :unstable))
   (route/resources "/assets")
