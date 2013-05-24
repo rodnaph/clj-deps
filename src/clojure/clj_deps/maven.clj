@@ -31,34 +31,37 @@
 (defn- metadata-resource
   "Return an EnLive resource for the dependencies metadata in the repository."
   [repository dependency]
-  (try
-    (-> (metadata-url repository dependency)
-      (java.net.URL.)
-      (html-resource))
-    (catch Exception e {})))
+  (let [url (metadata-url repository dependency)]
+    (try
+      (do
+        (println "fetch url:" url)
+        (-> url
+          (java.net.URL.)
+          (html-resource)))
+      (catch Exception e
+        (println "error fetching metadata:" url)
+        nil))))
 
 (defn- versions-for
   "Returns the versions for a dependency in a repository."
   [repository dependency]
-  (let [cache-id (format "dep::%s-%s"
-                         (:url repository)
-                         (str (first dependency)))]
-    (with-cache cache-id
-      (let [metadata (metadata-resource repository dependency)]
-        (->> (select metadata [:version])
-             (map (comp first :content)))))))
+  (if-let [metadata (metadata-resource repository dependency)]
+    (->> (select metadata [:version])
+         (map (comp first :content)))))
 
 (defn- dep->versions
   "Resolve a dependencies available versions."
   ([dependency] (dep->versions [] dependency))
   ([extra-repositories dependency]
-    (reduce
-      (fn [_ repository]
-        (if-let [versions (versions-for repository dependency)]
-          (reduced versions)))
-      (concat
-        repositories
-        extra-repositories))))
+    (let [all-repositories (apply vector
+                                  (concat repositories extra-repositories))]
+      (with-cache (str (first dependency))
+        (reduce
+          (fn [_ repository]
+            (if-let [versions (versions-for repository dependency)]
+              (reduced versions)))
+          nil
+          all-repositories)))))
 
 (defn- name-and-current
   "Extract just name and current version for dependency"
