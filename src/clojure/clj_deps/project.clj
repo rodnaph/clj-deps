@@ -1,6 +1,7 @@
 
 (ns clj-deps.project
-  (:require [clojure.edn :as edn]
+  (:require [clj-deps.cache :refer [with-cache]]
+            [clojure.edn :as edn]
             [clojure.java.io :as io])
   (:import (java.io PushbackReader)))
 
@@ -21,10 +22,11 @@
 (defn- project->edn
   "Fetch a project.clj and parse it to EDN."
   [project]
-  (edn/read
-    (PushbackReader.
-      (io/reader
-        (project-url project)))))
+  (let [url (project-url project)]
+    (with-cache (format "prj::%s" url)
+      (edn/read
+        (PushbackReader.
+          (io/reader url))))))
 
 ;; Public
 ;; ------
@@ -32,7 +34,10 @@
 (defn description->project
   "Turns a project spec into its project definition fetched from source control."
   [project]
-  (apply
-    hash-map
-    (drop 3 (project->edn project))))
+  (let [data (project->edn project)]
+    (merge {:name (str (nth data 1))
+            :version (nth data 2)}
+           (apply
+             hash-map
+             (drop 3 data)))))
 

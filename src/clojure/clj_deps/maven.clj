@@ -1,6 +1,7 @@
 
 (ns clj-deps.maven
-  (:require [net.cgrand.enlive-html :refer :all]
+  (:require [clj-deps.cache :refer [with-cache]]
+            [net.cgrand.enlive-html :refer :all]
             [clojure.string :as s]))
 
 (def ^{:private true}
@@ -39,9 +40,13 @@
 (defn- versions-for
   "Returns the versions for a dependency in a repository."
   [repository dependency]
-  (let [metadata (metadata-resource repository dependency)]
-    (->> (select metadata [:version])
-         (map (comp first :content)))))
+  (let [cache-id (format "dep::%s-%s"
+                         (:url repository)
+                         (str (first dependency)))]
+    (with-cache cache-id
+      (let [metadata (metadata-resource repository dependency)]
+        (->> (select metadata [:version])
+             (map (comp first :content)))))))
 
 (defn- dep->versions
   "Resolve a dependencies available versions."
