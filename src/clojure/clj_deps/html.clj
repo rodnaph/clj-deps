@@ -9,7 +9,7 @@
                     (name source)
                     user
                     repo)]
-    (format "[![Build Status](http://clj-deps.herokuapp.com/%s/status.png)](http://clj-deps.herokuapp.com/%s)"
+    (format "[![Dependencies Status](http://clj-deps.herokuapp.com/%s/status.png)](http://clj-deps.herokuapp.com/%s)"
           url url)))
 
 (defn status-class [current versions]
