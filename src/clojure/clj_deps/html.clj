@@ -9,9 +9,9 @@
       node
       [:attrs :class]
       (cond
-        (later-version? current (latest-stable versions)) "outdated"
-        (later-version? current (latest-version versions)) "stable"
-        :else "uptodate"))))
+        (later-version? current (latest-stable versions)) "status outdated"
+        (later-version? current (latest-version versions)) "status"
+        :else "status uptodate"))))
 
 (deftemplate layout "index.html"
   [title & body]
@@ -26,14 +26,23 @@
                          (:version project)))
   [:p] (content (:description project))
   [:tbody :tr] (clone-for [[dep-name current versions] (:dependencies project)]
-                          [:tr] (status-class current versions)
+                          [:.status] (status-class current versions)
                           [:.name] (content (str dep-name))
                           [:.using] (content current)
                           [:.unstable] (content (latest-version versions))
                           [:.stable] (content (latest-stable versions))))
 
+(defsnippet tpl-index-show
+  "index.html" [:.index-show]
+  [])
+
 ;; Public
 ;; ------
+
+(defn index-show []
+  (layout
+    "Clojure & ClojureScript Dependencies"
+    (tpl-index-show)))
 
 (defn project-show [project]
   (layout

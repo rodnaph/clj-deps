@@ -4,7 +4,6 @@
             [clj-deps.maven :refer [project->versions]]
             [clj-deps.checker :refer [project->status]]
             [clj-deps.html :as html]
-            [net.cgrand.enlive-html :refer :all]
             [compojure.core :refer :all]
             [compojure.handler :as handler]
             [compojure.route :as route]
@@ -31,8 +30,8 @@
       (format "resources/images/%s.png"
               (if result "uptodate" "outdated")))))
 
-(deftemplate www-index "index.html"
-  [req])
+(defn www-index [req]
+  (html/index-show))
 
 (defn www-project [req]
   (html/project-show

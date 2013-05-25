@@ -3,11 +3,6 @@
     display: none;
 }
 
-.outdated .status .icon-arrow-up {
-    display: block;
-}
-
-.uptodate .status .icon-thumbs-up {
-    display: block;
-}
+.status.outdated .icon-arrow-up { display: block; }
+.status.uptodate .icon-thumbs-up { display: block; }
 
