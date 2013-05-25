@@ -12,7 +12,7 @@
                  [ring/ring-jetty-adapter "1.1.8"]
                  [ring/ring-devel "1.1.8"]
                  [enlive "1.1.1"]
-                 [router "0.1.0"]]
+                 [router "0.2.0"]]
   :source-paths ["dev" "src/clojure" "src/html"]
   :min-lein-version "2.0.0"
   :main clj-deps.core)
