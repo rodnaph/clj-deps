@@ -1,6 +1,7 @@
 
 (ns clj-deps.cache
-  (:require [clojure.core.cache :refer :all]))
+  (:require [clj-deps.log :refer :all]
+            [clojure.core.cache :refer :all]))
 
 (def FIVE_MINUTES (* 1000 60 5))
 
@@ -14,10 +15,12 @@
   `(let [id# (keyword ~id)]
      (if (has? @cache-store id#)
        (do
-         (println "cache hit:" ~id)
+         (info {:type "cache.hit"
+                :id ~id})
          (id# (hit @cache-store id#)))
        (let [data# (do ~@body)]
-         (println "cache miss:" ~id)
+         (info {:type "cache.miss"
+                :id ~id})
          (reset!
            cache-store
            (miss @cache-store id# data#))

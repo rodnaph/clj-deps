@@ -1,6 +1,7 @@
 
 (ns clj-deps.maven
-  (:require [clj-deps.cache :refer [with-cache]]
+  (:require [clj-deps.log :refer :all]
+            [clj-deps.cache :refer [with-cache]]
             [net.cgrand.enlive-html :refer :all]
             [clojure.string :as s]))
 
@@ -31,15 +32,17 @@
 (defn- metadata-resource
   "Return an EnLive resource for the dependencies metadata in the repository."
   [repository dependency]
-  (let [url (metadata-url repository dependency)]
+  (let [url (metadata-url repository dependency)
+        evt {:type "url.fetch"
+             :url url}]
     (try
       (do
-        (println "fetch url:" url)
+        (info evt)
         (-> url
           (java.net.URL.)
           (html-resource)))
       (catch Exception e
-        (println "error fetching metadata:" url)
+        (error evt)
         nil))))
 
 (defn- versions-for
