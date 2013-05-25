@@ -1,11 +1,14 @@
 
 # Clojure/Script Dependencies WebApp
 
-This is a web application that checks a projects dependencies [Gemnasium](https://gemnasium.com/) style.
+This is a web application that checks a projects dependencies [Gemnasium](https://gemnasium.com/) style. The 
+live version is running on [Heroku](http://heroku.com) at:
+
+http://clj-deps.herokuapp.com
 
 ## Usage
 
-Clone the repository, and run the application from the REPL.
+To run your own copy, or hack on the project first clone the repository, and then start the application from the REPL.
 
 ```
 $> lein repl
