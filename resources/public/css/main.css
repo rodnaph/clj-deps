@@ -1,2 +1,13 @@
 
+.status i {
+    display: none;
+}
+
+.outdated .status .icon-arrow-up {
+    display: block;
+}
+
+.uptodate .status .icon-thumbs-up {
+    display: block;
+}
 
