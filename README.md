@@ -1,4 +1,6 @@
 
+[![Dependencies Status](http://clj-deps.herokuapp.com/github/rodnaph/clj-deps/status.png)](http://clj-deps.herokuapp.com/github/rodnaph/clj-deps)
+
 # Clojure/Script Dependencies WebApp
 
 This is a web application that checks a projects dependencies [Gemnasium](https://gemnasium.com/) style. The 
