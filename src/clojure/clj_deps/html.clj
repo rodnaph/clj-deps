@@ -4,6 +4,14 @@
             [router.core :refer [action src]]
             [boxuk.versions :refer [later-version? latest-version latest-stable]]))
 
+(defn markdown [{:keys [source user repo]}]
+  (let [url (format "%s/%s/%s"
+                    (name source)
+                    user
+                    repo)]
+    (format "[![Build Status](http://clj-deps.herokuapp.com/%s/status.png)](http://clj-deps.herokuapp.com/%s)"
+          url url)))
+
 (defn status-class [current versions]
   (fn [node]
     (assoc-in
@@ -30,6 +38,7 @@
                         :source (name (:source project))
                         :user (:user project)
                         :repo (:repo project))
+  [:.markdown] (content (markdown project))
   [:tbody :tr] (clone-for [[dep-name current versions] (:dependencies project)]
                           [:.status] (status-class current versions)
                           [:.name] (content (str dep-name))
