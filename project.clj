@@ -7,6 +7,7 @@
                  [clj-logging-config "1.9.10"]
                  [boxuk/versions "0.6.1"]
                  [confo "0.5.0"]
+                 [router "0.2.0"]
                  [compojure "1.1.5"]
                  [ring/ring-jetty-adapter "1.1.8"]
                  [ring/ring-devel "1.1.8"]

@@ -4,17 +4,32 @@
             [clj-deps.maven :refer [project->versions]]
             [clj-deps.checker :refer [project->status]]
             [clj-deps.html :as html]
+            [router.core :refer [set-routes! url rte]]
             [compojure.core :refer :all]
             [compojure.handler :as handler]
             [compojure.route :as route]
-            [ring.util.response :refer [file-response]]
-            [ring.middleware.stacktrace :refer [wrap-stacktrace]]))
+            [ring.util.response :refer [file-response redirect]]
+            [clojure.string :as s]))
+
+(set-routes!
+  {:home              "/"
+   :lookup            "/lookup"
+   :project           "/:source/:user/:repo"
+   :project.badge     "/:source/:user/:repo/status.png"})
+
+(defn wrap-exception [handler]
+  (fn [req]
+    (try
+      (handler req)
+      (catch Exception e
+        {:body (html/exception)}))))
 
 (defn req->description [{:keys [params]}]
-  {:source :github
-   :name (format "%s/%s"
-                 (:repo params)
-                 (:user params))})
+  (let [{:keys [source user repo]} params]
+    {:source (keyword source)
+     :user user
+     :repo repo
+     :name (format "%s/%s" user repo)}))
 
 (defn req->status [req]
   (-> (req->description req)
@@ -37,16 +52,28 @@
   (html/project-show
     (req->status req)))
 
+(defn www-not-found [req]
+  (html/not-found))
+
+(defn lookup-project [{:keys [params]}]
+  (let [[user repo] (s/split (:name params) #"/")
+        url (url :project
+                 :source (:source params)
+                 :user user
+                 :repo repo)]
+    (redirect url)))
+
 (defroutes all-routes
-  (GET "/" [] www-index)
-  (GET "/:repo/:user" [] www-project)
-  (GET "/:repo/:user/stable.png" [] (partial png-for :stable))
-  (GET "/:repo/:user/unstable.png" [] (partial png-for :unstable))
   (route/resources "/assets")
-  (route/not-found "404"))
+  (GET (rte :home) [] www-index)
+  (GET (rte :lookup) [] lookup-project)
+  (GET (rte :project) [] www-project)
+  (GET (rte :project.badge) [] (partial png-for :stable))
+  (GET "/:source/:repo/:user/unstable.png" [] (partial png-for :unstable))
+  (route/not-found www-not-found))
 
 (def app
   (-> #'all-routes
-      (wrap-stacktrace)
+      (wrap-exception)
       (handler/site)))
 

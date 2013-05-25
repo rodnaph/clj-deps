@@ -1,6 +1,7 @@
 
 (ns clj-deps.html
   (:require [net.cgrand.enlive-html :refer :all]
+            [router.core :refer [action src]]
             [boxuk.versions :refer [later-version? latest-version latest-stable]]))
 
 (defn status-class [current versions]
@@ -24,7 +25,11 @@
   [:h2] (content (format "%s %s"
                          (:name project)
                          (:version project)))
-  [:p] (content (:description project))
+  [:.desc] (content (:description project))
+  [:.badge-stable] (src :project.badge
+                        :source (name (:source project))
+                        :user (:user project)
+                        :repo (:repo project))
   [:tbody :tr] (clone-for [[dep-name current versions] (:dependencies project)]
                           [:.status] (status-class current versions)
                           [:.name] (content (str dep-name))
@@ -34,6 +39,15 @@
 
 (defsnippet tpl-index-show
   "index.html" [:.index-show]
+  []
+  [:form] (action :lookup))
+
+(defsnippet tpl-not-found
+  "index.html" [:.not-found]
+  [])
+
+(defsnippet tpl-exception
+  "index.html" [:.exception]
   [])
 
 ;; Public
@@ -48,4 +62,14 @@
   (layout
     (:name project)
     (tpl-project-show project)))
+
+(defn not-found []
+  (layout
+    "This is not the page you're looking for..."
+    (tpl-not-found)))
+
+(defn exception []
+  (layout
+    "Ooooops...."
+    (tpl-exception)))
 

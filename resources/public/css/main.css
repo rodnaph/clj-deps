@@ -1,8 +1,30 @@
 
+.header,
+.footer {
+    text-align: center;
+}
+
+h1 {
+    margin: 40px 0 60px 0;
+}
+
+h1 a:hover {
+    text-decoration: none;
+}
+
 .status i {
     display: none;
 }
 
 .status.outdated .icon-arrow-up { display: block; }
 .status.uptodate .icon-thumbs-up { display: block; }
+
+.exception h2,
+.not-found h2 {
+    text-align: center;
+}
+
+.footer {
+    margin: 20px 0 30px 0;
+}
 

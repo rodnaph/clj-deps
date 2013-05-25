@@ -12,18 +12,49 @@
 <div class="container">
 
   <div class="row">
-    <div class="span12">
-      <h1>Clojure &amp; ClojureScript Dependencies</h1>
+    <div class="span12 header">
+      <h1>
+        <a href="/">Clojure &amp; ClojureScript Dependencies</a>
+      </h1>
     </div>
   </div>
 
   <content>
 
   <div class="row index-show">
-    <div class="span12">
+    <div class="span2"></div>
+    <div class="span6 well">
 
+      <form method="get" action="/lookup" class="form-horizontal">
+
+        <div class="control-group">
+          <label class="control-label">
+            Project Name:
+          </label>
+          <div class="controls">
+            <input type="text" name="name" placeholder="eg. rodnaph/clj-deps" />
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="controls">
+            <select name="source">
+              <option value="github">Github</option>
+              <option value="bitbucket">BitBucket</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="controls">
+            <input type="submit" value="Check Now!" class="btn btn-primary" />
+          </div>
+        </div>
+
+      </form>
 
     </div>
+    <div class="span4"></div>
   </div>
 
   <div class="row project-show">
@@ -57,11 +88,44 @@
         </tbody>
       </table>
 
+      <h3>Badges</h3>
+
+      <p>
+        <img class="badge-stable" src="#" />
+      </p>
+
+      <p>Markdown:</p>
+
+<pre class="markdown">ajsdklaj dlas jda sjda sdjkal sdjkal djlas djklas djlk</pre>
+
+    </div>
+  </div>
+
+  <div class="row exception">
+    <div class="span12">
+
+      <h2>... hmmm, something went bad ...</h2>
+
+    </div>
+  </div>
+
+  <div class="row not-found">
+    <div class="span12">
+
+      <h2>... page not found, bummer ...</h2>
+
     </div>
   </div>
 
   </content>
 
+  <div class="row footer">
+    <div class="span12 footer">
+
+      <a href="https://github.com/rodnaph/clj-deps">Clone on Github</a>
+
+    </div>
+  </div>
 </div>
 
 </body>
