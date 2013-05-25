@@ -1,5 +1,5 @@
 
-# Clojure & ClojureScript Dependencies WebApp
+# Clojure/Script Dependencies WebApp
 
 This is a web application that checks a projects dependencies [Gemnasium](https://gemnasium.com/) style.
 
