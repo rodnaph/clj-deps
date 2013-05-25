@@ -29,7 +29,8 @@
       (merge (select-keys config [:port])
              options))))
 
-(defn -main []
+(defn -main [& [port]]
   (configure-logging)
-  (start-web))
+  (start-web {:port (or (Integer/parseInt port)
+                        (:port config))}))
 
