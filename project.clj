@@ -1,5 +1,5 @@
 
-(defproject clj-deps "0.1.0-SNAPSHOT"
+(defproject clj-deps "0.2.0"
   :description "Clojure dependency checker"
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/core.cache "0.6.3"]
