@@ -34,11 +34,9 @@
 (defn description->project
   "Turns a project spec into its project definition fetched from source control."
   [project]
-  (let [data (project->edn project)]
+  (let [[_ title version & info] (project->edn project)]
     (merge project
-           {:name (str (nth data 1))
-            :version (nth data 2)}
-           (apply
-             hash-map
-             (drop 3 data)))))
+           {:name (str title)
+            :version version}
+           (apply hash-map info))))
 
