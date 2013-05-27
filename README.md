@@ -18,5 +18,9 @@ clj-deps.core=> (use 'dev)
 clj-deps.core=> (start)
 ```
 
-This will start a web server on port 9001 by default.
+This will start a web server on port 9001 by default. Or you can also start using Leiningen.
+
+```
+lein run 9001
+```
 
