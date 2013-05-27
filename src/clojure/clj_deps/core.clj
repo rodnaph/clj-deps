@@ -22,15 +22,14 @@
                       true)))
 
 (defn start-web
-  ([] (start-web {}))
-  ([options]
-    (run-jetty
-      web/app
-      (merge (select-keys config [:port])
-             options))))
+  [options app]
+  (run-jetty
+    app
+    (merge (select-keys config [:port])
+           options)))
 
 (defn -main [& [port]]
   (configure-logging)
-  (start-web {:port (or (Integer/parseInt port)
-                        (:port config))}))
+  (start-web {:port (Integer/parseInt port)}
+             web/prod-app))
 

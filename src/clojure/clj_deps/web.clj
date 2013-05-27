@@ -9,6 +9,7 @@
             [compojure.handler :as handler]
             [compojure.route :as route]
             [ring.util.response :refer [file-response redirect]]
+            [ring.middleware.stacktrace :refer [wrap-stacktrace]]
             [clojure.string :as s]))
 
 (set-routes!
@@ -17,27 +18,27 @@
    :project           "/:source/:user/:repo"
    :project.badge     "/:source/:user/:repo/status.png"})
 
-(defn wrap-exception [handler]
+(defn- wrap-exception [handler]
   (fn [req]
     (try
       (handler req)
       (catch Exception e
         {:body (html/exception)}))))
 
-(defn req->description [{:keys [params]}]
+(defn- req->description [{:keys [params]}]
   (let [{:keys [source user repo]} params]
     {:source (keyword source)
      :user user
      :repo repo
      :name (format "%s/%s" user repo)}))
 
-(defn req->status [req]
+(defn- req->status [req]
   (-> (req->description req)
       (description->project)
       (project->versions)
       (project->status)))
 
-(defn png-for [stability req]
+(defn- png-for [stability req]
   (let [result (-> (req->status req)
                    (stability)
                    (empty?))]
@@ -45,17 +46,17 @@
       (format "resources/images/%s.png"
               (if result "uptodate" "outdated")))))
 
-(defn www-index [req]
+(defn- www-index [req]
   (html/index-show))
 
-(defn www-project [req]
+(defn- www-project [req]
   (html/project-show
     (req->status req)))
 
-(defn www-not-found [req]
+(defn- www-not-found [req]
   (html/not-found))
 
-(defn lookup-project [{:keys [params]}]
+(defn- lookup-project [{:keys [params]}]
   (let [[user repo] (s/split (:name params) #"/")
         url (url :project
                  :source (:source params)
@@ -72,7 +73,15 @@
   (GET "/:source/:repo/:user/unstable.png" [] (partial png-for :unstable))
   (route/not-found www-not-found))
 
-(def app
+;; Public
+;; ------
+
+(def dev-app
+  (-> #'all-routes
+      (wrap-stacktrace)
+      (handler/site)))
+
+(def prod-app
   (-> #'all-routes
       (wrap-exception)
       (handler/site)))
