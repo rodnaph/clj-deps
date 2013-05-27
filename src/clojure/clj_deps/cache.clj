@@ -1,12 +1,11 @@
 
 (ns clj-deps.cache
   (:require [clj-deps.log :refer :all]
+            [clj-deps.util :refer [FIVE_MINUTES_IN_MILLIS]]
             [clojure.core.cache :refer :all]))
 
-(def FIVE_MINUTES (* 1000 60 5))
-
 (def cache-store
-  (atom (ttl-cache-factory {} :ttl FIVE_MINUTES)))
+  (atom (ttl-cache-factory {} :ttl FIVE_MINUTES_IN_MILLIS)))
 
 ;; Public
 ;; ------

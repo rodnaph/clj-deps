@@ -4,11 +4,12 @@
             [clj-deps.maven :refer [project->versions]]
             [clj-deps.checker :refer [project->status]]
             [clj-deps.html :as html]
+            [clj-deps.util :refer [FIVE_MINUTES_IN_SECS]]
             [router.core :refer [set-routes! url rte]]
             [compojure.core :refer :all]
             [compojure.handler :as handler]
             [compojure.route :as route]
-            [ring.util.response :refer [file-response redirect]]
+            [ring.util.response :refer [file-response redirect header]]
             [ring.middleware.stacktrace :refer [wrap-stacktrace]]
             [clojure.string :as s]))
 
@@ -39,12 +40,16 @@
       (project->status)))
 
 (defn- png-for [stability req]
-  (let [result (-> (req->status req)
-                   (stability)
-                   (empty?))]
-    (file-response
-      (format "resources/images/%s.png"
-              (if result "uptodate" "outdated")))))
+  (let [filename (-> (req->status req)
+                     (stability)
+                     (empty?)
+                     (if "uptodate" "outdated"))
+        resource (format "resources/images/%s.png" filename)]
+    (-> resource
+        (file-response)
+        (header "cache-control"
+                (format "public, max-age=%d"
+                        FIVE_MINUTES_IN_SECS)))))
 
 (defn- www-index [req]
   (html/index-show))
