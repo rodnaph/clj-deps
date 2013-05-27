@@ -7,21 +7,25 @@
 (def cache-store
   (atom (ttl-cache-factory {} :ttl FIVE_MINUTES_IN_MILLIS)))
 
+(defn- cache-hit [id]
+  (info {:type "cache.hit"
+         :id (name id)})
+  (id (hit @cache-store id)))
+
+(defn- cache-miss [id data]
+  (info {:type "cache.miss"
+         :id (name id)})
+  (reset!
+    cache-store
+    (miss @cache-store id data))
+  data)
+
 ;; Public
 ;; ------
 
 (defmacro with-cache [id & body]
   `(let [id# (keyword ~id)]
      (if (has? @cache-store id#)
-       (do
-         (info {:type "cache.hit"
-                :id ~id})
-         (id# (hit @cache-store id#)))
-       (let [data# (do ~@body)]
-         (info {:type "cache.miss"
-                :id ~id})
-         (reset!
-           cache-store
-           (miss @cache-store id# data#))
-         data#))))
+       (cache-hit id#)
+       (cache-miss id# (do ~@body)))))
 
