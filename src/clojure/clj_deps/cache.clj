@@ -7,12 +7,12 @@
 (def cache-store
   (atom (ttl-cache-factory {} :ttl FIVE_MINUTES_IN_MILLIS)))
 
-(defn- cache-hit [id]
+(defn cache-hit [id]
   (info {:type "cache.hit"
          :id (name id)})
   (id (hit @cache-store id)))
 
-(defn- cache-miss [id data]
+(defn cache-miss [id data]
   (info {:type "cache.miss"
          :id (name id)})
   (reset!
