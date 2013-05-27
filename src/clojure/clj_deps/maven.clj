@@ -3,7 +3,8 @@
   (:require [clj-deps.log :refer :all]
             [clj-deps.cache :refer [with-cache]]
             [net.cgrand.enlive-html :refer :all]
-            [clojure.string :as s]))
+            [clojure.string :as s])
+  (:import (java.net URL)))
 
 (def ^{:private true}
   repositories
@@ -14,46 +15,42 @@
     :url "http://clojars.org/repo"}])
 
 (defn- load-resource [url]
-  (-> url
-      (java.net.URL.)
-      (html-resource)))
+  (html-resource (URL. url)))
 
 (defn- dependency-parts
   "Split a dependency name into its org/artifact parts"
   [[artifact]]
-  (if-let [parts (re-matches #"(.+?)\/(.*)" (str artifact))]
+  (if-let [parts (re-matches #"(.+?)\/(.*)"
+                             (str artifact))]
     (drop 1 parts)
-    (map str [artifact artifact])))
+    (repeat 2 (str artifact))))
 
 (defn- metadata-url
   "Return the URL for a dependencies metadata in a repository"
   [repository dependency]
-  (let [[dep-org dep-artifact] (dependency-parts dependency)]
+  (let [[org artifact] (dependency-parts dependency)]
     (format "%s/%s/%s/maven-metadata.xml"
             (:url repository)
-            (s/replace dep-org "." "/")
-            dep-artifact)))
+            (s/replace org "." "/")
+            artifact)))
 
-(defn- metadata-resource
+(defn- resource
   "Return an EnLive resource for the dependencies metadata in the repository."
   [repository dependency]
   (let [url (metadata-url repository dependency)
-        evt {:type "url.fetch"
-             :url url}]
+        evt {:type "url.fetch" :url url}]
+    (info evt)
     (try
-      (do
-        (info evt)
-        (load-resource url))
+      (load-resource url)
       (catch Exception e
-        (error evt)
-        nil))))
+        (error evt)))))
 
 (defn- versions-for
   "Returns the versions for a dependency in a repository."
   [repository dependency]
-  (if-let [metadata (metadata-resource repository dependency)]
-    (->> (select metadata [:version])
-         (map (comp first :content)))))
+  (if-let [metadata (resource repository dependency)]
+    (map (comp first :content)
+         (select metadata [:version]))))
 
 (defn- dep->versions
   "Resolve a dependencies available versions."
@@ -61,11 +58,10 @@
   ([extra-repositories dependency]
     (let [all-repositories (apply vector
                                   (concat repositories extra-repositories))]
-      (with-cache (str (first dependency))
+      (with-cache (-> dependency first str)
         (reduce
-          (fn [_ repository]
-            (if-let [versions (versions-for repository dependency)]
-              (reduced versions)))
+          #(if-let [versions (versions-for %2 dependency)]
+             (reduced versions))
           nil
           all-repositories)))))
 
