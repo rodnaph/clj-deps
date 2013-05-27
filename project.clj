@@ -6,7 +6,7 @@
                  [org.clojure/tools.logging "0.2.6"]
                  [clj-logging-config "1.9.10"]
                  [boxuk/versions "0.6.1"]
-                 [confo "0.5.0"]
+                 [confo "0.5.1"]
                  [router "0.2.0"]
                  [compojure "1.1.5"]
                  [ring/ring-jetty-adapter "1.1.8"]
