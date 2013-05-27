@@ -13,6 +13,11 @@
    {:name "Clojars"
     :url "http://clojars.org/repo"}])
 
+(defn- load-resource [url]
+  (-> url
+      (java.net.URL.)
+      (html-resource)))
+
 (defn- dependency-parts
   "Split a dependency name into its org/artifact parts"
   [[artifact]]
@@ -38,9 +43,7 @@
     (try
       (do
         (info evt)
-        (-> url
-          (java.net.URL.)
-          (html-resource)))
+        (load-resource url))
       (catch Exception e
         (error evt)
         nil))))
@@ -66,10 +69,9 @@
           nil
           all-repositories)))))
 
-(defn- name-and-current
-  "Extract just name and current version for dependency"
-  [[dep-name current]]
-  [dep-name current])
+(def take-vec
+  "Take n from coll and return as vector"
+  (comp (partial apply vector) take))
 
 ;; Public
 ;; ------
@@ -81,6 +83,8 @@
   (assoc
     project
     :dependencies
-    (map #(conj (name-and-current %) (dep->versions %))
-         (:dependencies project))))
+    (doall
+      (map #(conj (take-vec 2 %)
+                  (dep->versions %))
+           (:dependencies project)))))
 
