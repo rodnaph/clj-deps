@@ -30,8 +30,7 @@
   (let [{:keys [source user repo]} params]
     {:source (keyword source)
      :user user
-     :repo repo
-     :name (format "%s/%s" user repo)}))
+     :repo repo}))
 
 (defn- req->status [req]
   (-> (req->description req)
