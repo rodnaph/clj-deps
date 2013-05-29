@@ -28,10 +28,11 @@
         {:body (html/exception)}))))
 
 (defn- req->description [{:keys [params]}]
-  (let [{:keys [source user repo]} params]
+  (let [{:keys [source user repo branch]} params]
     {:source (keyword source)
      :user user
-     :repo repo}))
+     :repo repo
+     :branch (or branch "master")}))
 
 (defn- req->status [req]
   (-> (req->description req)

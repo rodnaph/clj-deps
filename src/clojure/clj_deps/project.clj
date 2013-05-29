@@ -22,11 +22,9 @@
   (from-domain "github.com" project))
 
 (defmethod project-clj-url :github
-  [project]
+  [{:keys [user repo branch]}]
   (format "https://raw.github.com/%s/%s/%s/project.clj"
-          (:user project)
-          (:repo project)
-          (get project :branch "master")))
+          user repo branch))
 
 ;; BitBucket
 
@@ -35,11 +33,9 @@
   (from-domain "bitbucket.org" project))
 
 (defmethod project-clj-url :bitbucket
-  [project]
+  [{:keys [user repo branch]}]
   (format "https://bitbucket.org/%s/%s/raw/%s/project.clj"
-          (:user project)
-          (:repo project)
-          (get project :branch "master")))
+          user repo branch))
 
 ;; Fns
 
