@@ -5,7 +5,7 @@
             [net.cgrand.enlive-html :refer [html-resource]]))
 
 (def project
-  {:dependencies '["foo" "1.2.3"]})
+  {:all-dependencies '["foo" "1.2.3"]})
 
 (defn project-resource [& args]
   (html-resource
@@ -19,7 +19,7 @@
 
 (deftest test-versions-extracted-for-project
   (let [[_ _ versions] (-> (get-versions)
-                           :dependencies
+                           :all-dependencies
                            first)]
     (is (= 54 (count versions)))))
 

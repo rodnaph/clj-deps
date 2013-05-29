@@ -1,6 +1,7 @@
 
 (ns clj-deps.web
   (:require [clj-deps.project :refer [description->project]]
+            [clj-deps.merger :refer [merge-dependencies]]
             [clj-deps.maven :refer [project->versions]]
             [clj-deps.checker :refer [project->status]]
             [clj-deps.html :as html]
@@ -35,6 +36,7 @@
 (defn- req->status [req]
   (-> (req->description req)
       (description->project)
+      (merge-dependencies)
       (project->versions)
       (project->status)))
 

@@ -78,9 +78,9 @@
   [project]
   (assoc
     project
-    :dependencies
+    :all-dependencies
     (doall
       (map #(conj (take-vec 2 %)
                   (dep->versions %))
-           (:dependencies project)))))
+           (:all-dependencies project)))))
 

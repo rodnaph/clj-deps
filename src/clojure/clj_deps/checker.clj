@@ -16,7 +16,7 @@
 (defn project->status
   "Return a projects out-dated dependencies"
   [project]
-  (let [dependencies (:dependencies project)]
+  (let [dependencies (:all-dependencies project)]
     (merge project
       {:stable (out-dated dependencies latest-stable)
        :unstable (out-dated dependencies latest-version)})))

@@ -4,15 +4,15 @@
             [clojure.test :refer :all]))
 
 (def stable-project
-  {:dependencies
+  {:all-dependencies
    [['foo "1.2.3" ["1.2.3"]]]})
 
 (def unstable-project
-  {:dependencies
+  {:all-dependencies
    [['foo "1.2.3" ["1.2.3" "1.2.3-SNAPSHOT"]]]})
 
 (def outdated-project
-  {:dependencies
+  {:all-dependencies
    [['foo "1.2.3" ["1.2.4"]]]})
 
 (deftest stable-and-unstable-deps-detectd

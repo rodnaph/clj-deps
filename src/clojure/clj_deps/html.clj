@@ -48,7 +48,7 @@
                         :user (:user project)
                         :repo (:repo project))
   [:.markdown] (content (markdown project))
-  [:tbody :tr] (clone-for [[dep-name current versions] (:dependencies project)]
+  [:tbody :tr] (clone-for [[dep-name current versions] (:all-dependencies project)]
                           [:.status] (status-class current versions)
                           [:.name] (content (str dep-name))
                           [:.using] (content current)
