@@ -1,10 +1,15 @@
 
 (ns clj-deps.merger)
 
+(defn- extract [project]
+  (concat
+    (:dependencies project)
+    (:dev-dependencies project)
+    (:plugins project)))
+
 (defn- profile-dependencies [project]
   (mapcat
-    (fn [[_ {:keys [dependencies]}]]
-      dependencies)
+    (comp extract second)
     (:profiles project)))
 
 ;; Public
@@ -17,8 +22,6 @@
     project
     :all-dependencies
     (concat
-      (:dependencies project)
-      (:dev-dependencies project)
-      (:plugins project)
+      (extract project)
       (profile-dependencies project))))
 
