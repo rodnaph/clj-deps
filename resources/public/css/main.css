@@ -16,6 +16,15 @@ h1 a:hover {
     display: none;
 }
 
+.legend {
+    list-style-type: none;
+    margin: 0;
+}
+
+.legend li {
+    margin: 6px;
+}
+
 .view-link {
     float: right;
     padding-top: 17px;
