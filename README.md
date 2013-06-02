@@ -6,6 +6,10 @@ live version is running on [Heroku](http://heroku.com) at:
 
 http://clj-deps.herokuapp.com
 
+![](http://github.com/rodnaph/clj-deps/raw/master/images/splash.png)
+
+![](http://github.com/rodnaph/clj-deps/raw/master/images/example.png)
+
 ## Usage
 
 To run your own copy, or hack on the project first clone the repository, and then start the application from the REPL.
