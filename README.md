@@ -1,5 +1,5 @@
 
-# Clojure/Script Dependencies [![Build Status](https://api.travis-ci.org/rodnaph/clj-deps.png)](http://travis-ci.org/rodnaph/clj-deps) [![Dependencies Status](http://clj-deps.herokuapp.com/github/rodnaph/clj-deps/status.png)](http://clj-deps.herokuapp.com/github/rodnaph/clj-deps)
+# Clojure/Script Dependencies [![Build Status](https://api.travis-ci.org/rodnaph/clj-deps.png)](http://travis-ci.org/rodnaph/clj-deps) [![Dependencies Status](http://clj-deps.herokuapp.com/github/rodnaph/clj-deps/status.png)](http://clj-deps.herokuapp.com/github/rodnaph/clj-deps) [![Dependencies Status](http://clj-deps.herokuapp.com/github/rodnaph/clj-deps/status.png)](http://clj-deps.herokuapp.com/github/rodnaph/clj-deps)
 
 This is a web application that checks a projects dependencies [Gemnasium](https://gemnasium.com/) style. The 
 live version is running on [Heroku](http://heroku.com) at:
