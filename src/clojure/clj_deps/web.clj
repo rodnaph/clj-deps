@@ -10,7 +10,7 @@
             [compojure.core :refer :all]
             [compojure.handler :as handler]
             [compojure.route :as route]
-            [ring.util.response :refer [file-response redirect header]]
+            [ring.util.response :refer [file-response redirect header content-type]]
             [ring.middleware.stacktrace :refer [wrap-stacktrace]]
             [clojure.string :as s]))
 
@@ -18,6 +18,7 @@
   {:home              "/"
    :lookup            "/lookup"
    :project           "/:source/:user/:repo"
+   :project.edn       "/:source/:user/:repo.edn"
    :project.badge     "/:source/:user/:repo/status.png"})
 
 (defn- wrap-exception [handler]
@@ -60,6 +61,11 @@
   (html/project-show
     (req->status req)))
 
+(defn- edn-project [req]
+  (-> {:status 200
+       :body (pr-str (req->status req))}
+      (content-type "application/edn")))
+
 (defn- www-not-found [req]
   (html/not-found))
 
@@ -75,6 +81,7 @@
   (route/resources "/assets")
   (GET (rte :home) [] www-index)
   (GET (rte :lookup) [] lookup-project)
+  (GET (rte :project.edn) [] edn-project)
   (GET (rte :project) [] www-project)
   (GET (rte :project.badge) [] (partial png-for :stable))
   (GET "/:source/:repo/:user/unstable.png" [] (partial png-for :unstable))
