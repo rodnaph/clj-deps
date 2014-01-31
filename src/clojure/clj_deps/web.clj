@@ -12,11 +12,13 @@
             [compojure.route :as route]
             [ring.util.response :refer [file-response redirect header content-type]]
             [ring.middleware.stacktrace :refer [wrap-stacktrace]]
-            [clojure.string :as s]))
+            [clojure.string :as s]
+            [clojure.edn :as edn]))
 
 (set-routes!
   {:home              "/"
    :lookup            "/lookup"
+   :submit            "/submit"
    :project           "/:source/:user/:repo"
    :project.edn       "/:source/:user/:repo.edn"
    :project.badge     "/:source/:user/:repo/status.png"})
@@ -35,15 +37,23 @@
      :repo repo
      :branch (or branch "master")}))
 
-(defn- req->status [req]
+(defn- get-req->status [req]
   (-> (req->description req)
       (description->project)
       (merge-dependencies)
       (project->versions)
       (project->status)))
 
+(defn- post-req->status [req]
+  (-> (:body req)
+      (slurp)
+      (read-string)
+      (merge-dependencies)
+      (project->versions)
+      (project->status)))
+
 (defn- png-for [stability req]
-  (let [filename (-> (req->status req)
+  (let [filename (-> (get-req->status req)
                      (stability)
                      (empty?)
                      (if "uptodate" "outdated"))
@@ -54,17 +64,25 @@
                 (format "public, max-age=%d"
                         FIVE_MINUTES_IN_SECS)))))
 
+(defn- edn-response [edn]
+  (-> {:status 200
+       :body (pr-str edn)}
+      (content-type "application/edn")))
+
 (defn- www-index [req]
   (html/index-show))
 
 (defn- www-project [req]
   (html/project-show
-    (req->status req)))
+    (get-req->status req)))
 
 (defn- edn-project [req]
-  (-> {:status 200
-       :body (pr-str (req->status req))}
-      (content-type "application/edn")))
+  (edn-response
+    (get-req->status req)))
+
+(defn- post-project [req]
+  (edn-response
+    (post-req->status req)))
 
 (defn- www-not-found [req]
   (html/not-found))
@@ -79,6 +97,7 @@
 
 (defroutes all-routes
   (route/resources "/assets")
+  (POST (rte :submit) [] post-project)
   (GET (rte :home) [] www-index)
   (GET (rte :lookup) [] lookup-project)
   (GET (rte :project.edn) [] edn-project)
